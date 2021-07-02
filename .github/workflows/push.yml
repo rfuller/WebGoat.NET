@@ -23,3 +23,5 @@ jobs:
       run: dotnet build --no-restore
     - name: Convert sarif for uploading to GitHub
       uses: security-code-scan/security-code-scan-results-action@main
+    - name: Upload sarif
+      uses: github/codeql-action/upload-sarif@v1
