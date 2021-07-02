@@ -13,17 +13,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
+
     - name: Set up projects
       uses: security-code-scan/security-code-scan-add-action@v1.1
-    - name: Restore dependencies
-      run: dotnet restore
+    
     - name: Build
-      run: dotnet build --no-restore
+      run: |
+        dotnet restore
+        dotnet build
+
     - name: Convert sarif for uploading to GitHub
       uses: security-code-scan/security-code-scan-results-action@main
+
     - name: Upload sarif
       uses: github/codeql-action/upload-sarif@v1
