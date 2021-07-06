@@ -28,8 +28,13 @@ jobs:
     - name: Upload sarif
       uses: github/codeql-action/upload-sarif@v1
   
+    - name: report file info
+      run: |
+        pwd
+  
     - name: Upload sarif artifacts
       uses: actions/upload-artifact@v2
       with:
         name: sarif-artifacts-${{ github.run_number }}
         path: /home/runner/work/WebGoat.NET/results/*.sarif
+        if-no-files-found: error
