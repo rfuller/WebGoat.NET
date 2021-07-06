@@ -27,6 +27,15 @@ jobs:
 
     - name: Upload sarif
       uses: github/codeql-action/upload-sarif@v1
+  
+    - run: mkdir -p /home/runner/work/WebGoat.NET/artifact/
+    
+    - run: echo hello > path/to/artifact/world.txt
+    
+    - uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: /home/runner/work/WebGoat.NET/artifact/world.txt
 
     - uses: actions/upload-artifact@v2
       with:
