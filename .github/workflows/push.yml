@@ -27,3 +27,8 @@ jobs:
 
     - name: Upload sarif
       uses: github/codeql-action/upload-sarif@v1
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: my-sarif-artifact
+        path: /home/runner/work/WebGoat.NET/results/0.sarif
