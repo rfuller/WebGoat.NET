@@ -31,5 +31,5 @@ jobs:
     - name: Upload sarif artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: sarif-artifacts
-        path: ../results/*.sarif
+        name: sarif-artifacts-${{ github.run_number }}
+        path: ${{ github.workspace }}/results/*.sarif
