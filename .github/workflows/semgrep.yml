@@ -21,3 +21,15 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - run: semgrep ci --output semgrep.sarif --sarif
+
+    - name: Upload sarif artifact to Github artifact storage
+      uses: actions/upload-artifact@v2
+      with:
+        #name: ${{ github.event.inputs.repository_owner_name }}~${{ github.event.inputs.repository_name }}~${{ github.event.inputs.repository_branch_name }}~${{ github.event.inputs.repository_id }}~${{ github.event.inputs.pull_request_number }}~${{ github.run_number }}
+        name: semgrep.sarif
+        # By default, semgrep-action's "genereateSarif: 1" flag hard-codes the sarif filename to semgrep.sarif
+        path: ${{ github.workspace }}/semgrep.sarif
+        retention-days: 5
+        if-no-files-found: error
+        config: >-
+          ${{ github.event.inputs.sast_configuration }}
