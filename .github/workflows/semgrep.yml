@@ -20,4 +20,4 @@ jobs:
       image: returntocorp/semgrep
     steps:
     - uses: actions/checkout@v3
-    - run: semgrep ci --config auto --output semgrep.sarif --sarif
+    - run: semgrep ci --output semgrep.sarif --sarif
