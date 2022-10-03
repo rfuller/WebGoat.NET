@@ -1,0 +1,41 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up projects
+      uses: security-code-scan/security-code-scan-add-action@v1.1
+    
+    - name: Build
+      run: |
+        dotnet restore
+        dotnet build
+
+    - name: Convert sarif for uploading to GitHub
+      uses: security-code-scan/security-code-scan-results-action@main
+
+    - name: Upload sarif
+      uses: github/codeql-action/upload-sarif@v1
+  
+    - name: report file info
+      run: |
+        pwd
+        ls
+  
+    - name: Upload sarif artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: sarif-artifacts-${{ github.run_number }}
+        path: /home/runner/work/WebGoat.NET/results/*.sarif
+        if-no-files-found: error
