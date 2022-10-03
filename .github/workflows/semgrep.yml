@@ -1,0 +1,73 @@
+name: semgrep Scan
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository_owner_name:
+        description: "Repository Owner Name"
+        required: true
+        default: "OverDriveInc"
+      repository_name:
+        description: "Repository Name"
+        required: true
+        default: "WebGoat.Net"
+      repository_branch_name:
+        description: "Repository Branch Name"
+        required: true
+        default: "main"
+      repository_id:
+        description: "Repository ID"
+        required: true
+      pull_request_number:
+        description: "Pull Request Number"
+        required: true
+      sast_configuration:
+        description: "Semgrep commandline --config parameters"
+        required: false
+        default: "p/r2c-ci" # https://semgrep.dev/p/r2c-ci
+        #default: "p/default"
+
+jobs:
+  scan:
+    name: semgrep scan and upload sarif
+    runs-on: ubuntu-latest
+    env:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+      #SEMGREP_RULES: ${{ github.event.inputs.sast_configuration }}
+    container:
+      image: returntocorp/semgrep
+
+    steps:
+    #- name: Echo Inputs, for debugging purposes
+    #  shell: pwsh
+    #  run: |
+    #    Write-Output "DEBUGGING:  Repository Name:  ${{ github.event.inputs.repository_name }}"
+    #    Write-Output "DEBUGGING:  Repository Owner:  ${{ github.event.inputs.repository_owner }}"
+    #    Write-Output "DEBUGGING:  SAST Configuration:  ${{ github.event.inputs.sast_configuration }}"
+    
+    - name: Checkout Input.repository_name under current github.workspace
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ github.event.inputs.repository_owner_name }}/${{ github.event.inputs.repository_name }}
+        token: ${{ secrets.RFULLER_REPO_READONLY_PAT }}
+
+    #- name: Run semgrep; export results to .sarif
+      #uses: returntocorp/semgrep-action@v1
+      #with:
+      #  auditOn: push
+      #  publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
+      #  publishDeployment: 1220
+      #  generateSarif: "1"
+    - uses: actions/checkout@v3
+    - run: semgrep ci --output semgrep.sarif --sarif
+
+    - name: Upload sarif artifact to Github artifact storage
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ github.event.inputs.repository_owner_name }}~${{ github.event.inputs.repository_name }}~${{ github.event.inputs.repository_branch_name }}~${{ github.event.inputs.repository_id }}~${{ github.event.inputs.pull_request_number }}~${{ github.run_number }}
+        # By default, semgrep-action's "genereateSarif: 1" flag hard-codes the sarif filename to semgrep.sarif
+        path: ${{ github.workspace }}/semgrep.sarif
+        retention-days: 5
+        if-no-files-found: error
+        config: >-
+          ${{ github.event.inputs.sast_configuration }}
