@@ -14,7 +14,7 @@ jobs:
     - run: semgrep ci --output semgrep.sarif --sarif
 
     - name: Upload sarif artifact to Github artifact storage
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         #name: ${{ github.event.inputs.repository_owner_name }}~${{ github.event.inputs.repository_name }}~${{ github.event.inputs.repository_branch_name }}~${{ github.event.inputs.repository_id }}~${{ github.event.inputs.pull_request_number }}~${{ github.run_number }}
         name: semgrep.sarif
